@@ -1,0 +1,10 @@
+data/seen_jobs.json
+data/.env
+data/settings.json
+data/resume.md
+data/run_all.log
+data/pull_supervisor.log
+output/
+__pycache__/
+*.pyc
+.venv/
