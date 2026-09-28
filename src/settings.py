@@ -17,6 +17,7 @@ DEFAULTS = {
     "exclude_title_keywords": PRESETS[DEFAULT_PRESET]["exclude_title"],
     "greenhouse_companies": [],
     "lever_companies": [],
+    "ashby_companies": [],
 }
 
 

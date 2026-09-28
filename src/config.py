@@ -36,9 +36,10 @@ EMAIL_ON_COMPLETION = True
 INCLUDE_KEYWORDS = _settings["include_keywords"]
 EXCLUDE_TITLE_KEYWORDS = _settings["exclude_title_keywords"]
 
-# Company slugs to poll on Greenhouse / Lever, set by setup.py (optional).
+# Company slugs to poll on Greenhouse / Lever / Ashby, set by setup.py (optional).
 GREENHOUSE_COMPANIES: list[str] = _settings["greenhouse_companies"]
 LEVER_COMPANIES: list[str] = _settings["lever_companies"]
+ASHBY_COMPANIES: list[str] = _settings["ashby_companies"]
 
 # --- Sources (same for every user; public feeds, no keys needed) -----------
 
@@ -53,7 +54,10 @@ WWR_FEEDS = [
 
 REMOTEOK_API = "https://remoteok.com/api"
 HIMALAYAS_API = "https://himalayas.app/jobs/api?limit=40"
+REMOTIVE_API = "https://remotive.com/api/remote-jobs?category=software-dev"
+JOBICY_API = "https://jobicy.com/api/v2/remote-jobs?count=50&industry=dev"
+ARBEITNOW_API = "https://www.arbeitnow.com/api/job-board-api"
 
 # Require "remote" to appear somewhere (title, location or description) unless
-# the source is remote-only by definition (WWR, RemoteOK, Himalayas already are).
-REMOTE_ONLY_SOURCES = {"weworkremotely", "remoteok", "himalayas"}
+# the source is remote-only by definition.
+REMOTE_ONLY_SOURCES = {"weworkremotely", "remoteok", "himalayas", "remotive", "jobicy"}

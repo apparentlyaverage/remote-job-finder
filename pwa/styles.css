@@ -1,0 +1,247 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --panel-border: #262b36;
+  --text: #e8eaed;
+  --text-dim: #9aa1ac;
+  --accent: #4f7cff;
+  --accent-dim: #33406b;
+  --good: #3ecf8e;
+  --warn: #e0a63e;
+  --bad: #e05a5a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  padding: 16px;
+}
+
+header {
+  max-width: 900px;
+  margin: 0 auto 20px;
+}
+
+header h1 {
+  font-size: 1.4rem;
+  margin: 0 0 4px;
+}
+
+header p {
+  color: var(--text-dim);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.controls {
+  max-width: 900px;
+  margin: 0 auto 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.controls select, .controls input {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.controls input[type="text"] {
+  flex: 1;
+  min-width: 160px;
+}
+
+#count {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin-left: auto;
+}
+
+.job-list {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.job-card {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: opacity 0.15s;
+}
+
+.job-card.applied {
+  opacity: 0.45;
+}
+
+.job-card.followup-due {
+  border-color: var(--warn);
+  box-shadow: 0 0 0 1px rgba(224, 166, 62, 0.25);
+}
+
+.job-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.job-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+
+.job-meta {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.fit-badge {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.fit-5, .fit-4 { background: rgba(62,207,142,0.15); color: var(--good); }
+.fit-3 { background: rgba(224,166,62,0.15); color: var(--warn); }
+.fit-2, .fit-1 { background: rgba(224,90,90,0.15); color: var(--bad); }
+.fit-none { background: var(--accent-dim); color: var(--text-dim); }
+
+.resume-angle {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.resume-angle strong { color: var(--text); }
+
+.blurb {
+  margin-top: 10px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  background: rgba(255,255,255,0.03);
+  border-left: 3px solid var(--accent-dim);
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+.job-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+button, .btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-apply {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-copy {
+  background: var(--panel-border);
+  color: var(--text);
+}
+
+.btn-applied-toggle {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--panel-border);
+}
+
+.btn-applied-toggle.is-applied {
+  color: var(--good);
+  border-color: var(--good);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-dim);
+  padding: 60px 20px;
+}
+
+label.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.followup-panel {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--panel-border);
+}
+
+.followup-label {
+  color: var(--warn);
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin: 0 0 10px;
+}
+
+.followup-email-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
+.followup-subject {
+  font-size: 0.85rem;
+  margin: 0 0 8px;
+  color: var(--text-dim);
+}
+
+.followup-subject strong {
+  color: var(--text);
+}
+
+.followup-body {
+  width: 100%;
+  min-height: 140px;
+  background: var(--bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 10px;
+}

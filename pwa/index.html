@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Remote Job Finder</title>
+  <meta name="theme-color" content="#0f1115" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Remote Job Finder</h1>
+    <p id="subtitle">Loading matches…</p>
+  </header>
+
+  <div class="controls">
+    <select id="sortSelect">
+      <option value="fit">Sort: best fit first</option>
+      <option value="date">Sort: newest first</option>
+    </select>
+    <select id="filterSelect">
+      <option value="unapplied">Show: not yet applied</option>
+      <option value="all">Show: all</option>
+      <option value="applied">Show: applied only</option>
+      <option value="followup">Show: follow-up due</option>
+    </select>
+    <input type="text" id="searchBox" placeholder="Filter by title or company…" />
+    <span id="count"></span>
+  </div>
+
+  <div class="controls">
+    <label class="checkbox-label" for="yourNameInput" style="flex: 1;">
+      Your name (for follow-up email sign-off):
+      <input type="text" id="yourNameInput" placeholder="e.g. Uthando Mkwanazi" style="flex: 1; min-width: 160px;" />
+    </label>
+  </div>
+
+  <div class="job-list" id="jobList"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -5,12 +5,17 @@ cover blurb for each one using a local Gemma model (via Ollama) — so the
 end-of-day review is "read and click submit," not "write from scratch."
 
 **This tool never submits an application for you.** It reads public,
-automation-tolerant job feeds (We Work Remotely RSS, RemoteOK's public API,
-Himalayas' public API, and any Greenhouse/Lever company boards you list),
-drafts a blurb per new match, and writes it all into one markdown file for
-you to read and act on yourself. Deliberately does **not** touch LinkedIn —
+automation-tolerant job feeds — We Work Remotely (RSS), RemoteOK, Himalayas,
+Remotive, Jobicy, and Arbeitnow (all public JSON APIs, no key needed), plus
+any Greenhouse/Lever/Ashby company boards you list — drafts a blurb per new
+match, and writes it all into a markdown report and a PWA dashboard for you
+to read and act on yourself. Deliberately does **not** touch LinkedIn —
 LinkedIn's ToS prohibits automated interaction with the platform and bans
 accounts that do it.
+
+Remotive's API asks for max ~4 requests/day and a link back to the original
+posting — this pipeline runs once daily and already links every job to its
+real apply page, so both are satisfied by how it's built, not just by luck.
 
 ## Setup — new user
 
@@ -49,9 +54,10 @@ email — it won't overwrite anything you don't answer.
 ### Advanced: targeting specific companies
 
 Open `data/settings.json` and add slugs to `greenhouse_companies` /
-`lever_companies` (found in a company's careers URL — e.g.
-`boards.greenhouse.io/stripe` → `"stripe"`) to also poll their own ATS boards
-directly, on top of the public feeds.
+`lever_companies` / `ashby_companies` (found in a company's careers URL —
+e.g. `boards.greenhouse.io/stripe` → `"stripe"`, `jobs.ashbyhq.com/notion` →
+`"notion"`) to also poll their own ATS boards directly, on top of the
+public feeds.
 
 ## Run
 
@@ -64,6 +70,45 @@ Writes `output/<today>.md` with every new match: title, company, source,
 apply link, which resume angle to lead with, and a drafted cover-letter
 paragraph. Re-running the same day (or after) skips jobs already surfaced —
 tracked in `data/seen_jobs.json`.
+
+## Dashboard (PWA)
+
+```bash
+cd src
+python serve_pwa.py
+```
+
+Opens a local dashboard at `http://localhost:8787` — every match ever
+surfaced (not just today's), sortable by fit score or date, filterable by
+applied/not-applied, with a copy-blurb button and an Apply button that opens
+the real posting in a new tab (not embedded — most ATS/company career pages
+block being framed, so this is the version that actually works everywhere).
+Install it from your browser's install prompt for an app-like experience.
+It's local-only: binds to `localhost`, nothing leaves your machine except
+your own browser talking to it.
+
+"Applied" status is stored in your browser's local storage — per-browser,
+not synced, and not backed up anywhere. That's an intentional trade-off to
+keep this stdlib-only with no database.
+
+### Follow-up reminders
+
+Marking a job "applied" timestamps it. 24 hours later it surfaces under
+**Show: follow-up due** with a drafted follow-up email (subject + body,
+using your name from the "Your name" field and, if the job had one, a line
+pulled from its résumé angle). Nothing sends automatically — you either
+copy the text or add the company's contact email to get a pre-filled
+`mailto:` link that opens your own mail client for you to review and send.
+Most job-board postings don't include a direct contact email, so the
+email field is optional and the copy button is the reliable fallback.
+
+## Fixing broken drafts after a bad run
+
+If a run's blurbs come back as `[LLM error: ...]` (e.g. the model timed out,
+ran out of RAM, or Ollama wasn't running), `python backfill_blurbs.py`
+re-fetches the source feeds fresh, matches broken entries by title+company,
+and redrafts anything still listed. Postings that have expired off the job
+boards since get clearly marked as such rather than silently left broken.
 
 ## Schedule it daily
 

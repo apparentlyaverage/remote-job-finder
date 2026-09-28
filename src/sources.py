@@ -219,13 +219,140 @@ def fetch_lever(company_slug: str) -> list[Job]:
     return jobs
 
 
+def fetch_remotive(api_url: str) -> list[Job]:
+    """Remotive's public API. Their docs ask for max ~4 requests/day and
+    proper attribution back to the original job URL — this pipeline runs
+    once daily and already links every job to its real posting, so both
+    conditions are met by design, not just by accident.
+    """
+    try:
+        raw = _get(api_url)
+    except Exception as exc:  # noqa: BLE001
+        print(f"[remotive] failed to fetch: {exc}")
+        return []
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        print(f"[remotive] failed to parse JSON: {exc}")
+        return []
+    jobs: list[Job] = []
+    for entry in data.get("jobs", []):
+        jobs.append(
+            Job(
+                id=f"remotive:{entry.get('id')}",
+                source="remotive",
+                title=entry.get("title", ""),
+                company=entry.get("company_name", "Unknown"),
+                url=entry.get("url", ""),
+                location=entry.get("candidate_required_location") or "Remote",
+                description=_strip_html(entry.get("description", "")),
+                posted_at=entry.get("publication_date", ""),
+            )
+        )
+    return jobs
+
+
+def fetch_jobicy(api_url: str) -> list[Job]:
+    try:
+        raw = _get(api_url)
+    except Exception as exc:  # noqa: BLE001
+        print(f"[jobicy] failed to fetch: {exc}")
+        return []
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        print(f"[jobicy] failed to parse JSON: {exc}")
+        return []
+    jobs: list[Job] = []
+    for entry in data.get("jobs", []):
+        jobs.append(
+            Job(
+                id=f"jobicy:{entry.get('id')}",
+                source="jobicy",
+                title=entry.get("jobTitle", ""),
+                company=entry.get("companyName", "Unknown"),
+                url=entry.get("url", ""),
+                location=entry.get("jobGeo") or "Remote",
+                description=_strip_html(entry.get("jobDescription", entry.get("jobExcerpt", ""))),
+                posted_at="",
+            )
+        )
+    return jobs
+
+
+def fetch_arbeitnow(api_url: str) -> list[Job]:
+    try:
+        raw = _get(api_url)
+    except Exception as exc:  # noqa: BLE001
+        print(f"[arbeitnow] failed to fetch: {exc}")
+        return []
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        print(f"[arbeitnow] failed to parse JSON: {exc}")
+        return []
+    jobs: list[Job] = []
+    for entry in data.get("data", []):
+        # Arbeitnow lists both remote and on-site roles — only keep remote
+        # ones, since that's the whole point of this pipeline.
+        if not entry.get("remote"):
+            continue
+        jobs.append(
+            Job(
+                id=f"arbeitnow:{entry.get('slug')}",
+                source="arbeitnow",
+                title=entry.get("title", ""),
+                company=entry.get("company_name", "Unknown"),
+                url=entry.get("url", ""),
+                location=entry.get("location") or "Remote",
+                description=_strip_html(entry.get("description", "")),
+                posted_at=str(entry.get("created_at", "")),
+            )
+        )
+    return jobs
+
+
+def fetch_ashby(company_slug: str) -> list[Job]:
+    api_url = f"https://api.ashbyhq.com/posting-api/job-board/{company_slug}"
+    try:
+        raw = _get(api_url)
+    except Exception as exc:  # noqa: BLE001
+        print(f"[ashby:{company_slug}] failed to fetch: {exc}")
+        return []
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        print(f"[ashby:{company_slug}] failed to parse JSON: {exc}")
+        return []
+    jobs: list[Job] = []
+    for entry in data.get("jobs", []):
+        jobs.append(
+            Job(
+                id=f"ashby:{company_slug}:{entry.get('id')}",
+                source="ashby",
+                title=entry.get("title", ""),
+                company=company_slug,
+                url=entry.get("jobUrl") or entry.get("applyUrl", ""),
+                location=entry.get("location") or ("Remote" if entry.get("isRemote") else ""),
+                description=_strip_html(entry.get("descriptionPlain", entry.get("descriptionHtml", ""))),
+                posted_at=entry.get("publishedAt", ""),
+            )
+        )
+    return jobs
+
+
 def fetch_all(config) -> list[Job]:
     jobs: list[Job] = []
     jobs += fetch_wwr(config.WWR_FEEDS)
     jobs += fetch_remoteok(config.REMOTEOK_API)
     jobs += fetch_himalayas(config.HIMALAYAS_API)
+    jobs += fetch_remotive(config.REMOTIVE_API)
+    jobs += fetch_jobicy(config.JOBICY_API)
+    jobs += fetch_arbeitnow(config.ARBEITNOW_API)
     for slug in config.GREENHOUSE_COMPANIES:
         jobs += fetch_greenhouse(slug)
     for slug in config.LEVER_COMPANIES:
         jobs += fetch_lever(slug)
+    for slug in config.ASHBY_COMPANIES:
+        jobs += fetch_ashby(slug)
     return jobs

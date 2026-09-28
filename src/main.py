@@ -68,6 +68,9 @@ def main() -> None:
     out_path = report.build_report(drafted, config.OUTPUT_DIR)
     print(f"\nReport written to {out_path}")
 
+    jobs_json_path = report.append_json(drafted, config.OUTPUT_DIR)
+    print(f"Dashboard data updated: {jobs_json_path}")
+
     seen_ids.update(job.id for job in fresh)
     filters.save_seen(config.SEEN_JOBS_FILE, seen_ids)
     print("Seen-jobs cache updated. Run again tomorrow for the next batch.")
